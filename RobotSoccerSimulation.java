@@ -21,6 +21,8 @@ public class RobotSoccerSimulation extends JPanel {
     private static double ENEMY_SPEED = 1.8;
     private static double FRICTION = 0.0009;
 
+    //
+
     // Initially null; Set this to a string to end the simulation
     private volatile String endMessage;
 
@@ -33,28 +35,42 @@ public class RobotSoccerSimulation extends JPanel {
 
         Ball(double x, double y, double radius, double speed, Color color) {
             // You know what to do here :)
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.speed = speed;
+            this.color = color;
         }
 
         void moveToward(double targetX, double targetY) {
             // Fill this in
+            var dx = targetX - this.x;
+            var dy = targetY - this.y;
+            var v = speed / Math.hypot(dx, dy);
+            this.x = constrain(this.x + v * dx, this.radius, WIDTH - this.radius);
+            this.y = constrain(this.y + v * dy, this.radius, HEIGHT - this.radius);
         }
 
         // Slow down the ball by FRICTION. Don't let it go negative, though!
         void applyFriction() {
             // Fill this in
+            this.speed = constrain(this.speed - FRICTION, 0, Double.POSITIVE_INFINITY);
+
         }
 
         // Returns whether the ball is *entirely* inside the goal
-        boolean inside(Goal goal) {
-            return false; // <--------- FIX THIS
+        boolean inside(Goal g) {
+          // check this one
+          return this.x - this.radius > g.x - g.w / 2 && this.x + this.radius < g.x + g.w / 2 && this.y - this.radius > g.y - g.h / 2 && this.y + this.radius < g.y + g.h / 2;
+             // <--------- FIX THIS
         }
     }
 
-    private static Ball[] balls = new Ball[] { 
-        new Ball(0.0, HEIGHT, PLAYER_RADIUS, PLAYER_SPEED, Color.BLUE),
+    private static Ball[] balls = new Ball[] {
+        new Ball(0.0, HEIGHT, PLAYER_RADIUS, PLAYER_SPEED, Color.BLUE), // change x and y for visibility
         new Ball(WIDTH * 0.25, 40, ENEMY_RADIUS, ENEMY_SPEED, Color.RED),
         new Ball(WIDTH * 0.75, 40, ENEMY_RADIUS, ENEMY_SPEED, Color.RED),
-        new Ball(WIDTH / 2, HEIGHT / 2, ENEMY_RADIUS, ENEMY_SPEED, Color.RED) 
+        new Ball(WIDTH / 2, HEIGHT / 2, ENEMY_RADIUS, ENEMY_SPEED, Color.RED)
     };
 
     private static class Goal {
@@ -64,7 +80,7 @@ public class RobotSoccerSimulation extends JPanel {
         double h = 100;
     }
 
-    private static Goal goal = new Goal();
+    private static Goal goal = new Goal(); // creates a goal
 
     // You don't need to touch this one.
     public void paintComponent(Graphics g) {
@@ -93,12 +109,56 @@ public class RobotSoccerSimulation extends JPanel {
             // detection and adjustment, and for ending the simulation by setting the
             // proper endMessage.
             //
+
+            for (int i = 0; i < balls.length; i++){
+              balls[i].applyFriction(); // ball 0 moves toward goal
+              balls[i].moveToward((i == 0 ? goal.x : balls[0].x), (i == 0 ? goal.y : balls[0].y)); // all the other balls move toward ball 0
+            }
+            adjustIfCollisions();
+            endSimulationIfNecessary();
             repaint();
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
             }
         }
+    }
+
+    public void endSimulationIfNecessary() {
+      // figure this one out
+        if (balls[0].speed <= 0){
+          endMessage = "Oh no!";
+        } else if(balls[0].inside(goal)){
+          endMessage = "GOOOAAAL!!!";
+        }
+      }
+
+
+    public void adjustIfCollisions() {
+      for (var b1 : balls) {
+        for (var b2 : balls) {
+          if (b1 != b2) {
+            var dx = b2.x - b1.x;
+            var dy = b2.y - b1.y;
+            double distance = Math.hypot(dx, dy);
+            double overlap = b1.radius + b2.radius - distance;
+            if (overlap > 0){
+              double adjustX = (overlap / 2) * (dx / distance);
+              double adjustY = (overlap / 2) * (dy / distance);
+              b1.x -= adjustX;
+              b1.y -= adjustY;
+              b2.x += adjustX;
+              b2.y += adjustY;
+            }
+
+          }
+        }
+      }
+    }
+
+    private static double constrain(double value, double low, double high){
+      // contrains the range
+      return Math.min(Math.max(low, value), high);
     }
 
     public static void main(String[] args) {
