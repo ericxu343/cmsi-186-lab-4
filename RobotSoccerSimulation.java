@@ -15,11 +15,11 @@ public class RobotSoccerSimulation extends JPanel {
     private static double HEIGHT = 600;
 
     // Simulation parameters: in your lab, set these from command line arguments
-    private static double PLAYER_RADIUS = 15;
-    private static double ENEMY_RADIUS = 20;
-    private static double PLAYER_SPEED = 1.3;
-    private static double ENEMY_SPEED = 1.8;
-    private static double FRICTION = 0.0009;
+    private static double PLAYER_RADIUS;
+    private static double ENEMY_RADIUS;
+    private static double PLAYER_SPEED;
+    private static double ENEMY_SPEED;
+    private static double FRICTION;
 
     //
 
@@ -66,12 +66,7 @@ public class RobotSoccerSimulation extends JPanel {
         }
     }
 
-    private static Ball[] balls = new Ball[] {
-        new Ball(0.0, HEIGHT, PLAYER_RADIUS, PLAYER_SPEED, Color.BLUE), // change x and y for visibility
-        new Ball(WIDTH * 0.25, 40, ENEMY_RADIUS, ENEMY_SPEED, Color.RED),
-        new Ball(WIDTH * 0.75, 40, ENEMY_RADIUS, ENEMY_SPEED, Color.RED),
-        new Ball(WIDTH / 2, HEIGHT / 2, ENEMY_RADIUS, ENEMY_SPEED, Color.RED)
-    };
+    private static Ball[] balls;
 
     private static class Goal {
         double x = WIDTH / 2;
@@ -162,6 +157,29 @@ public class RobotSoccerSimulation extends JPanel {
     }
 
     public static void main(String[] args) {
+      try {
+        if (args.length != 5){
+          throw new IllegalArgumentException("Exactly five arguments required");
+        }
+
+        PLAYER_RADIUS = Double.parseDouble(args[0]);
+        ENEMY_RADIUS = Double.parseDouble(args[1]);
+        PLAYER_SPEED = Double.parseDouble(args[2]);
+        ENEMY_SPEED = Double.parseDouble(args[3]);
+        FRICTION = Double.parseDouble(args[4]);
+      } catch (NumberFormatException e) {
+        System.err.println("Arguments must all be doubles");
+      } catch (IllegalArgumentException e) {
+        System.err.println(e.getMessage());
+      }
+
+          balls = new Ball[] {
+          new Ball(0.0, HEIGHT, PLAYER_RADIUS, PLAYER_SPEED, Color.BLUE), // change x and y for visibility
+          new Ball(WIDTH * 0.25, 40, ENEMY_RADIUS, ENEMY_SPEED, Color.RED),
+          new Ball(WIDTH * 0.75, 40, ENEMY_RADIUS, ENEMY_SPEED, Color.RED),
+          new Ball(WIDTH / 2, HEIGHT / 2, ENEMY_RADIUS, ENEMY_SPEED, Color.RED)
+      };
+
         SwingUtilities.invokeLater(() -> {
             var panel = new RobotSoccerSimulation();
             panel.setBackground(Color.GREEN.brighter());
