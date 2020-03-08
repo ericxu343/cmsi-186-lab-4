@@ -169,8 +169,10 @@ public class RobotSoccerSimulation extends JPanel {
         FRICTION = Double.parseDouble(args[4]);
       } catch (NumberFormatException e) {
         System.err.println("Arguments must all be doubles");
+        return;
       } catch (IllegalArgumentException e) {
         System.err.println(e.getMessage());
+        return;
       }
 
           balls = new Ball[] {
