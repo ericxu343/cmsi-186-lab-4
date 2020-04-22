@@ -6,4 +6,6 @@ Import this repository into a new repository of your own and write the code acco
 
 In your new repository, don’t forget to edit this README file, as _your_ repository will certainly not contain any unfinished Java programs.
 
-Using the JavaScript model as a helper, I added methods into the Soccer simulation with ball graphics that moved given its assigned speed on its x-value and a y-value so it would work such as checking if it was in the goal, applying friction, and applying constraints. There is the player ball that has its special variable assignments. Whether the ball successfully enters the goal depends on the friction and the speed of the other balls. If the player makes it to the goal, it is a goal, but if the player stops, then the game ends. 
+MY ACTIONS:
+
+Using the JavaScript model as a helper, I added methods into the Soccer simulation. Given its speed, its x-value, y-value the ball would move. I checked to see if the player ball was in the goal, applied friction, and applied constraints. The player ball also has its special variable assignments. Whether the ball successfully enters the goal depends on the friction and the speed of the other balls. If the player makes it to the goal, it is a goal, but if the player stops, then the game ends. 
